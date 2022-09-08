@@ -1,0 +1,5 @@
+out/
+node_modules/
+
+# External open source project files which are not modified.
+media/CircleGraph/external/

@@ -1,0 +1,11 @@
+out
+node_modules
+format.patch
+Makefile
+.vscode-test/**
+.nyc_output
+coverage
+test-results.xml
+
+# production for react-app
+build

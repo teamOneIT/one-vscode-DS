@@ -1,0 +1,66 @@
+{
+    "0BSD": {
+        "permitted": "yes"
+    },
+
+    "Apache-2.0": {
+        "permitted": "yes"
+    },
+
+    "BSD-2-Clause": {
+        "permitted": "yes"
+    },
+
+    "BSD-3-Clause": {
+        "permitted": "yes"
+    },
+
+    "CC-BY-3.0": {
+        "permitted": "yes"
+    },
+
+    "CC-BY-4.0": {
+        "permitted": "yes"   
+    },
+
+    "CC0-1.0": {
+        "permitted": "yes"
+    },
+
+    "GPL-3.0": {
+        "permitted": "no",
+        "caution": "Obligation to open source code cannot be accepted"
+    },
+
+    "ISC": {
+        "permitted": "yes"
+    },
+
+    "MIT": {
+        "permitted": "yes"
+    },
+
+    "ODC-By-1.0": {
+        "permitted": "conditional",
+        "caution": "Data verification should be done"
+    },
+
+    "Python-2.0": {
+        "permitted": "conditional",
+        "caution": "Could be conflict with GPL2, LGPL license"
+    },
+
+    "Unlicense": {
+        "permitted": "yes"
+    },
+
+    "(MIT AND CC-BY-3.0)": {
+        "permitted": "conditional",
+        "caution": "Non-single license is hard to be judged automatically"
+    },
+
+    "(MIT OR CC0-1.0)": {
+        "permitted": "conditional",
+        "caution": "Non-single license is hard to be judged automatically"
+    }
+}

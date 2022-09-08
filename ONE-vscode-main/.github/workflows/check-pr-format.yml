@@ -1,0 +1,33 @@
+name: Check PR Format
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  check-format:
+    if: ${{ ! contains(github.event.pull_request.labels.*.name, 'PR/NO TEST') }}
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - run: npm install
+      - run: npm run lint
+      - run: npm run lintjs
+      - run: npm run lintcss
+      - run: npm run linthtml
+      - run: sudo apt-get install clang-format-8
+      - run: sudo apt-get install jq
+      - run: bash infra/format
+
+      - name: Upload format.patch
+        uses: actions/upload-artifact@v2
+        if: ${{ failure() }}
+        with:
+          name: format.patch
+          path: format.patch
+          retention-days: 1

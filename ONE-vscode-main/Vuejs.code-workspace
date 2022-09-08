@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"path": "..\\workspace_백업\\Vuejs"
+		},
+		{
+			"path": "..\\shared-master-async-test"
+		},
+		{
+			"path": "..\\PJT\\final_pjt_front\\front"
+		},
+		{
+			"path": "..\\final_Pjt_github\\Frontend\\ssafit_front"
+		},
+		{
+			"path": "..\\공통-front\\frontend"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "front"
+	}
+}
