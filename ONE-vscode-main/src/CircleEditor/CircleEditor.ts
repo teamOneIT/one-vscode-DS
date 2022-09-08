@@ -97,6 +97,7 @@ interface CircleEditDocumentDelegate {
 		this._onDidDispose.fire();
 		super.dispose();
 	}
+	
 
 	/**
 	 * Called when the user edits the document in a webview.
