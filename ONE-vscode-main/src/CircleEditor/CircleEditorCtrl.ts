@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as vscode from 'vscode';
 
-import {Balloon} from '../Utils/Balloon';
-import {getNonce} from '../Utils/external/Nonce';
-import {BackendColor} from './BackendColor';
+import { Balloon } from '../Utils/Balloon';
+import { getNonce } from '../Utils/external/Nonce';
+import { BackendColor } from './BackendColor';
 
 
 class CtrlStatus {
@@ -51,7 +51,7 @@ export interface CircleGraphEvent {
 /* istanbul ignore next */
 export class CircleGraphCtrl {
 
-    //GUI 코드 경로로 수정해야 함
+  //GUI 코드 경로로 수정해야 함
   protected static readonly folderMediaCircleGraph = 'media/CircleGraph';
   protected static readonly folderMediaCircleGraphExt = 'media/CircleGraph/external';
   protected static readonly folderExternal = 'external/';
@@ -60,8 +60,8 @@ export class CircleGraphCtrl {
   protected readonly _webview: vscode.Webview;
   protected _modelToLoad: string;
   protected _modelLength: number;
-  protected _eventHandler: CircleGraphEvent|undefined;
-  protected _selectionNames: string[]|undefined;
+  protected _eventHandler: CircleGraphEvent | undefined;
+  protected _selectionNames: string[] | undefined;
   protected _state: CtrlStatus;
   protected _viewMode: string;
 
@@ -77,7 +77,7 @@ export class CircleGraphCtrl {
     this._viewMode = 'viewer';
   }
 
-  public initGraphCtrl(modelToLoad: string, notify: CircleGraphEvent|undefined) {
+  public initGraphCtrl(modelToLoad: string, notify: CircleGraphEvent | undefined) {
     this._webview.options = this.getWebviewOptions(this._extensionUri);
     this._modelToLoad = modelToLoad;
     this._modelLength = 0;
@@ -123,15 +123,15 @@ export class CircleGraphCtrl {
   }
 
   public setPartition(partition: any) {
-    this._webview.postMessage({command: MessageDefs.partition, partition: partition});
+    this._webview.postMessage({ command: MessageDefs.partition, partition: partition });
   }
 
   public sendBackendColor(backends: BackendColor[]) {
-    this._webview.postMessage({command: MessageDefs.backendColor, backends: backends});
+    this._webview.postMessage({ command: MessageDefs.backendColor, backends: backends });
   }
 
   public reloadModel() {
-    this._webview.postMessage({command: MessageDefs.reload});
+    this._webview.postMessage({ command: MessageDefs.reload });
   }
 
   private registerEventHandlers() {
@@ -161,58 +161,58 @@ export class CircleGraphCtrl {
       case MessageDefs.selection:
         this.handleSelection(message.names, message.tensors);
         return;
-    //added here
-        case MessageDefs.editOperator:
-            this.handleEditOperator();
-            return;
-        case MessageDefs.editTensor:
-            this.handleEditTensor();
-            return;
-        case MessageDefs.editBuffer:
-            this.handleEditBuffer();
-            return;
+      //added here
+      case MessageDefs.editOperator:
+        this.handleEditOperator();
+        return;
+      case MessageDefs.editTensor:
+        this.handleEditTensor();
+        return;
+      case MessageDefs.editBuffer:
+        this.handleEditBuffer();
+        return;
     }
   }
 
-//added handler functions for editing here
+  //added handler functions for editing here
   protected handleEditOperator() {
 
-      try {
-        //필요한 매개변수 붙여서 post message
-        this._webview.postMessage({command: MessageDefs.editOperator});
-      } catch (err: unknown) {
-        this.handleLoadError(err);
-      }
-    
+    try {
+      //필요한 매개변수 붙여서 post message
+      this._webview.postMessage({ command: MessageDefs.editOperator });
+    } catch (err: unknown) {
+      this.handleLoadError(err);
+    }
+
   }
 
   protected handleEditTensor() {
 
     try {
-        //필요한 매개변수 붙여서 post message
-        this._webview.postMessage({command: MessageDefs.editTensor});
+      //필요한 매개변수 붙여서 post message
+      this._webview.postMessage({ command: MessageDefs.editTensor });
     } catch (err: unknown) {
-        this.handleLoadError(err);
+      this.handleLoadError(err);
     }
-  
-}
-protected handleEditBuffer() {
+
+  }
+  protected handleEditBuffer() {
 
     try {
-     //필요한 매개변수 붙여서 post message
-     this._webview.postMessage({command: MessageDefs.editBuffer});
+      //필요한 매개변수 붙여서 post message
+      this._webview.postMessage({ command: MessageDefs.editBuffer });
     } catch (err: unknown) {
-        this.handleLoadError(err);
+      this.handleLoadError(err);
     }
-  
-}
+
+  }
 
 
 
   protected handleChangeConfiguration(e: vscode.ConfigurationChangeEvent) {
     if (e.affectsConfiguration('workbench.colorTheme')) {
       if (this.isReady()) {
-        this._webview.postMessage({command: MessageDefs.colorTheme});
+        this._webview.postMessage({ command: MessageDefs.colorTheme });
       }
     }
   }
@@ -227,17 +227,17 @@ protected handleEditBuffer() {
     // TODO check scheme
     const reqUrl = new URL(url);
     let filePath = vscode.Uri.joinPath(
-        this._extensionUri, CircleGraphCtrl.folderMediaCircleGraph, reqUrl.pathname);
+      this._extensionUri, CircleGraphCtrl.folderMediaCircleGraph, reqUrl.pathname);
     if (!fs.existsSync(filePath.fsPath)) {
       filePath = vscode.Uri.joinPath(
-          this._extensionUri, CircleGraphCtrl.folderMediaCircleGraphExt, reqUrl.pathname);
+        this._extensionUri, CircleGraphCtrl.folderMediaCircleGraphExt, reqUrl.pathname);
     }
 
     try {
-      const fileData = fs.readFileSync(filePath.fsPath, {encoding: encoding, flag: 'r'});
-      this._webview.postMessage({command: MessageDefs.response, response: fileData});
+      const fileData = fs.readFileSync(filePath.fsPath, { encoding: encoding, flag: 'r' });
+      this._webview.postMessage({ command: MessageDefs.response, response: fileData });
     } catch (err) {
-      this._webview.postMessage({command: MessageDefs.error, response: ''});
+      this._webview.postMessage({ command: MessageDefs.error, response: '' });
     }
   }
 
@@ -306,7 +306,7 @@ protected handleEditBuffer() {
     }
 
     this._webview.postMessage(
-        {command: MessageDefs.selection, type: 'names', names: this._selectionNames});
+      { command: MessageDefs.selection, type: 'names', names: this._selectionNames });
 
     // cleanup
     this._selectionNames = undefined;
@@ -335,7 +335,7 @@ protected handleEditBuffer() {
 
   private sendModelPath() {
     this._webview.postMessage(
-        {command: MessageDefs.loadmodel, type: MessageDefs.modelpath, value: this._modelToLoad});
+      { command: MessageDefs.loadmodel, type: MessageDefs.modelpath, value: this._modelToLoad });
   }
 
   /**
@@ -363,7 +363,7 @@ protected handleEditBuffer() {
     fs.open(this._modelToLoad, 'r', (err, fd) => {
       if (err) {
         this._webview.postMessage(
-            {command: MessageDefs.loadmodel, type: MessageDefs.error, responseErr: err.message});
+          { command: MessageDefs.loadmodel, type: MessageDefs.error, responseErr: err.message });
         Balloon.error(err.message);
         return;
       }
@@ -379,7 +379,7 @@ protected handleEditBuffer() {
         total: this._modelLength,
         responseArray: modelData
       });
-      fs.close(fd, (err) => {});
+      fs.close(fd, (err) => { });
     });
   }
 
@@ -397,7 +397,7 @@ protected handleEditBuffer() {
 
   public getHtmlForWebview(webview: vscode.Webview) {
     const htmlPath = this.getMediaPath('index.html');
-    let html = fs.readFileSync(htmlPath.fsPath, {encoding: 'utf-8'});
+    let html = fs.readFileSync(htmlPath.fsPath, { encoding: 'utf-8' });
 
     const nonce = getNonce();
     html = html.replace(/\%nonce%/gi, nonce);
@@ -436,7 +436,7 @@ protected handleEditBuffer() {
   }
 
   private updateExternalUri(
-      html: string, webview: vscode.Webview, search: string, replace: string) {
+    html: string, webview: vscode.Webview, search: string, replace: string) {
     const replaceUri = this.getUriFromPath(webview, CircleGraphCtrl.folderExternal + replace);
     return html.replace(search, `${replaceUri}`);
   }
@@ -453,14 +453,14 @@ protected handleEditBuffer() {
   }
 
   private getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions
-      &vscode.WebviewPanelOptions {
+    & vscode.WebviewPanelOptions {
     return {
       // Enable javascript in the webview
       enableScripts: true,
       // And restrict the webview to only loading content from our extension's
       // 'media/CircleGraph' directory.
       localResourceRoots:
-          [vscode.Uri.joinPath(extensionUri, CircleGraphCtrl.folderMediaCircleGraph)],
+        [vscode.Uri.joinPath(extensionUri, CircleGraphCtrl.folderMediaCircleGraph)],
 
       // to prevent view to reload after loosing focus
       retainContextWhenHidden: true

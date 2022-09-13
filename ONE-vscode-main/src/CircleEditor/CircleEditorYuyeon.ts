@@ -211,7 +211,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		};
 	}
 
-//add openView
+//add openView -> 함수 위치 여부 논의
   public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
     let view = new CircleEditor(panel, extensionUri);
     view.initGraphCtrl(this.uri.path, undefined);
@@ -258,10 +258,9 @@ export class CircleEditorProvider implements
     this._context = context;
   }
 
-  // private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<CircleEditorDocument>>();
-	// public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
+  private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<CircleEditorDocument>>();
+	public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
 
-  onDidChangeCustomDocument: vscode.Event<vscode.CustomDocumentEditEvent<CircleEditorDocument>> | vscode.Event<vscode.CustomDocumentContentChangeEvent<CircleEditorDocument>>;
   saveCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken): Thenable<void> {
     throw new Error('Method not implemented.');
   }
@@ -324,4 +323,71 @@ export class CircleEditorProvider implements
       _token: vscode.CancellationToken): Promise<void> {
     document.openView(webviewPanel, this._context.extensionUri);
   }
+
+  private _requestId = 1;
+	private readonly _callbacks = new Map<number, (response: any) => void>();
+
+	private postMessageWithResponse<R = unknown>(panel: vscode.WebviewPanel, type: string, body: any): Promise<R> {
+		const requestId = this._requestId++;
+		const p = new Promise<R>(resolve => this._callbacks.set(requestId, resolve));
+		panel.webview.postMessage({ type, requestId, body });
+		return p;
+	}
+
+	private postMessage(panel: vscode.WebviewPanel, type: string, body: any): void {
+		panel.webview.postMessage({ type, body });
+	}
+
+	private onMessage(document: CircleEditorDocument, message: any) {
+
+    //message handling 어디서 할지
+
+		// switch (message.type) {
+		// 	case 'stroke':
+		// 		document.makeEdit(message as CircleEdits);
+		// 		return;
+
+		// 	case 'response':
+		// 		{
+		// 			const callback = this._callbacks.get(message.requestId);
+		// 			callback?.(message.body);
+		// 			return;
+		// 		}
+		// }
+	}
 };
+
+
+
+ class WebviewCollection {
+
+	private readonly _webviews = new Set<{
+		readonly resource: string;
+		readonly webviewPanel: vscode.WebviewPanel;
+	}>();
+
+	/**
+	 * Get all known webviews for a given uri.
+	 */
+	public *get(uri: vscode.Uri): Iterable<vscode.WebviewPanel> {
+		const key = uri.toString();
+		for (const entry of this._webviews) {
+			if (entry.resource === key) {
+				yield entry.webviewPanel;
+			}
+		}
+	}
+
+	/**
+	 * Add a new webview to the collection.
+	 */
+	public add(uri: vscode.Uri, webviewPanel: vscode.WebviewPanel) {
+		const entry = { resource: uri.toString(), webviewPanel };
+		this._webviews.add(entry);
+
+		webviewPanel.onDidDispose(() => {
+			this._webviews.delete(entry);
+		});
+	}
+}
+
