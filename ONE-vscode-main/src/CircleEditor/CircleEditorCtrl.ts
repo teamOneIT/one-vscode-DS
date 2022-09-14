@@ -137,6 +137,7 @@ export class CircleGraphCtrl {
   private registerEventHandlers() {
     // Handle messages from the webview
     this._webview.onDidReceiveMessage(message => {
+      console.log("register event handler 내부")
       this.handleReceiveMessage(message);
     }, null, this._ctrlDisposables);
   }
@@ -405,7 +406,6 @@ export class CircleGraphCtrl {
 
             <head>
                 <meta charset="utf-8">
-                <meta http-equiv="Content-Security-Policy" content="img-src vscode;">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">F
                 <title>Document</title>
             </head>
