@@ -93,7 +93,7 @@
         "displayName": "Circle Editor",
         "selector": [
           {
-            "filenamePattern": "test_onnx_yuyeon.circle"
+            "filenamePattern": "*.circle"
           }
         ],
         "priority": "default"

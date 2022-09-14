@@ -16,26 +16,26 @@
 
 import * as vscode from 'vscode';
 import { Disposable, disposeAll } from './dispose';
-import {CircleGraphCtrl} from './CircleEditorCtrl';
+import { CircleGraphCtrl } from './CircleEditorCtrl';
 import * as Circle from './circle_schema_generated';
 
 
 
 class CircleEditor extends CircleGraphCtrl {
-  private readonly _panel: vscode.WebviewPanel;
+	private readonly _panel: vscode.WebviewPanel;
 
-  constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    super(extensionUri, panel.webview);
-    this._panel = panel;
-  }
+	constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+		super(extensionUri, panel.webview);
+		this._panel = panel;
+	}
 
-  public loadContent() {
-    this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
-  }
+	public loadContent() {
+		this._panel.webview.html = this.getHtmlForWebview(this._panel.webview);
+	}
 
-  public owner(panel: vscode.WebviewPanel) {
-    return this._panel === panel;
-  }
+	public owner(panel: vscode.WebviewPanel) {
+		return this._panel === panel;
+	}
 }
 
 interface CircleEditorDocumentDelegate { //?
@@ -43,18 +43,18 @@ interface CircleEditorDocumentDelegate { //?
 }
 
 
-interface CircleEdits{
-  content: string; //edit할 사항 작성
+interface CircleEdits {
+	content: string; //edit할 사항 작성
 }
 
-class OperatorEdits implements CircleEdits{
-  content = "operator";
- //edit 내용
+class OperatorEdits implements CircleEdits {
+	content = "operator";
+	//edit 내용
 }
 
 export class CircleEditorDocument extends Disposable implements vscode.CustomDocument {
-  
-  static async create(
+
+	static async create(
 		uri: vscode.Uri,
 		backupId: string | undefined,
 		delegate: CircleEditorDocumentDelegate,
@@ -77,7 +77,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 	private _documentData: Uint8Array;
 	private _edits: Array<CircleEdits> = [];
 	private _savedEdits: Array<CircleEdits> = [];
-  private _circleEditor: CircleEditor[];
+	private _circleEditor: CircleEditor[];
 
 	private readonly _delegate: CircleEditorDocumentDelegate;
 
@@ -90,7 +90,7 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		this._uri = uri;
 		this._documentData = initialContent;
 		this._delegate = delegate;
-    this._circleEditor = [];
+		this._circleEditor = [];
 	}
 
 	public get uri() { return this._uri; }
@@ -211,69 +211,70 @@ export class CircleEditorDocument extends Disposable implements vscode.CustomDoc
 		};
 	}
 
-//add openView -> 함수 위치 여부 논의
-  public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    let view = new CircleEditor(panel, extensionUri);
-    view.initGraphCtrl(this.uri.path, undefined);
-    view.loadContent();
-    this._circleEditor.push(view);
+	//add openView -> 함수 위치 여부 논의
+	public openView(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+		let view = new CircleEditor(panel, extensionUri);
+		view.initGraphCtrl(this.uri.path, undefined);
+		view.loadContent();
+		this._circleEditor.push(view);
 
-    panel.onDidDispose(() => {
-      // TODO make faster
-      this._circleEditor.forEach((editor, index) => {
-        if (view.owner(panel)) {
-          view.disposeGraphCtrl();
-          this._circleEditor.splice(index, 1);
-        }
-      });
-    });
+		panel.onDidDispose(() => {
+			// TODO make faster
+			this._circleEditor.forEach((editor, index) => {
+				if (view.owner(panel)) {
+					view.disposeGraphCtrl();
+					this._circleEditor.splice(index, 1);
+				}
+			});
+		});
 
-    return view;
-  }
+		return view;
+	}
 };
 
 
 export class CircleEditorProvider implements
-    vscode.CustomEditorProvider<CircleEditorDocument> {
-  public static readonly viewType = 'one.editor.circle'; //priority 높여야 함
+	vscode.CustomEditorProvider<CircleEditorDocument> {
+	public static readonly viewType = 'one.editor.circle';
 
-  private _context: vscode.ExtensionContext;
+	private _context: vscode.ExtensionContext;
 
-  public static register(context: vscode.ExtensionContext): void {
-    const provider = new CircleEditorProvider(context);
+	public static register(context: vscode.ExtensionContext): void {
+		const provider = new CircleEditorProvider(context);
 
-    const registrations = [
-      vscode.window.registerCustomEditorProvider(CircleEditorProvider.viewType, provider, {
-        webviewOptions: {
-          retainContextWhenHidden: true,
-        },
-        supportsMultipleEditorsPerDocument: true,
-      })
-      // Add command registration here
-    ];
-    registrations.forEach(disposable => context.subscriptions.push(disposable));
-  }
+		const registrations = [
+			vscode.window.registerCustomEditorProvider(CircleEditorProvider.viewType, provider, {
+				webviewOptions: {
+					retainContextWhenHidden: true,
+				},
+				supportsMultipleEditorsPerDocument: true,
+			})
+			// Add command registration here
+		];
+		registrations.forEach(disposable => context.subscriptions.push(disposable));
+	}
 
-  constructor(private readonly context: vscode.ExtensionContext) {
-    this._context = context;
-  }
+	constructor(private readonly context: vscode.ExtensionContext) {
+		this._context = context;
+	}
 
-  private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<CircleEditorDocument>>();
+	private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<CircleEditorDocument>>();
 	public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
 
-  saveCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken): Thenable<void> {
-    throw new Error('Method not implemented.');
-  }
-  saveCustomDocumentAs(document: CircleEditorDocument, destination: vscode.Uri, cancellation: vscode.CancellationToken): Thenable<void> {
-    throw new Error('Method not implemented.');
-  }
-  revertCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken): Thenable<void> {
-    throw new Error('Method not implemented.');
-  }
-  backupCustomDocument(document: CircleEditorDocument, context: vscode.CustomDocumentBackupContext, cancellation: vscode.CancellationToken): Thenable<vscode.CustomDocumentBackup> {
-    throw new Error('Method not implemented.');
-  }
+	saveCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	saveCustomDocumentAs(document: CircleEditorDocument, destination: vscode.Uri, cancellation: vscode.CancellationToken): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	revertCustomDocument(document: CircleEditorDocument, cancellation: vscode.CancellationToken): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	backupCustomDocument(document: CircleEditorDocument, context: vscode.CustomDocumentBackupContext, cancellation: vscode.CancellationToken): Thenable<vscode.CustomDocumentBackup> {
+		throw new Error('Method not implemented.');
+	}
 
+	private readonly webviews = new WebviewCollection();
 
 	async openCustomDocument(
 		uri: vscode.Uri,
@@ -317,14 +318,14 @@ export class CircleEditorProvider implements
 		return document;
 	}
 
-  // CustomReadonlyEditorProvider implements
-  async resolveCustomEditor(
-      document: CircleEditorDocument, webviewPanel: vscode.WebviewPanel,
-      _token: vscode.CancellationToken): Promise<void> {
-    document.openView(webviewPanel, this._context.extensionUri);
-  }
+	// CustomReadonlyEditorProvider implements
+	async resolveCustomEditor(
+		document: CircleEditorDocument, webviewPanel: vscode.WebviewPanel,
+		_token: vscode.CancellationToken): Promise<void> {
+		document.openView(webviewPanel, this._context.extensionUri);
+	}
 
-  private _requestId = 1;
+	private _requestId = 1;
 	private readonly _callbacks = new Map<number, (response: any) => void>();
 
 	private postMessageWithResponse<R = unknown>(panel: vscode.WebviewPanel, type: string, body: any): Promise<R> {
@@ -340,7 +341,7 @@ export class CircleEditorProvider implements
 
 	private onMessage(document: CircleEditorDocument, message: any) {
 
-    //message handling 어디서 할지
+		//message handling 어디서 할지
 
 		// switch (message.type) {
 		// 	case 'stroke':
@@ -359,7 +360,7 @@ export class CircleEditorProvider implements
 
 
 
- class WebviewCollection {
+class WebviewCollection {
 
 	private readonly _webviews = new Set<{
 		readonly resource: string;
