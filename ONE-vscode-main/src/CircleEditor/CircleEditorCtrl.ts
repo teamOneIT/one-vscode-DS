@@ -396,37 +396,68 @@ export class CircleGraphCtrl {
   }
 
   public getHtmlForWebview(webview: vscode.Webview) {
-    const htmlPath = this.getMediaPath('index.html');
-    let html = fs.readFileSync(htmlPath.fsPath, { encoding: 'utf-8' });
 
-    const nonce = getNonce();
-    html = html.replace(/\%nonce%/gi, nonce);
-    html = html.replace('%webview.cspSource%', webview.cspSource);
-    // necessary files from netron to work
-    html = this.updateUri(html, webview, '%view-grapher.css%', 'view-grapher.css');
-    html = this.updateUri(html, webview, '%view-sidebar.css%', 'view-sidebar.css');
-    html = this.updateExternalUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
-    html = this.updateUri(html, webview, '%view-grapher.js%', 'view-grapher.js');
-    html = this.updateExternalUri(html, webview, '%dagre.js%', 'dagre.js');
-    html = this.updateExternalUri(html, webview, '%base.js%', 'base.js');
-    html = this.updateExternalUri(html, webview, '%text.js%', 'text.js');
-    html = this.updateExternalUri(html, webview, '%json.js%', 'json.js');
-    html = this.updateExternalUri(html, webview, '%xml.js%', 'xml.js');
-    html = this.updateExternalUri(html, webview, '%python.js%', 'python.js');
-    html = this.updateExternalUri(html, webview, '%protobuf.js%', 'protobuf.js');
-    html = this.updateExternalUri(html, webview, '%flatbuffers.js%', 'flatbuffers.js');
-    html = this.updateExternalUri(html, webview, '%flexbuffers.js%', 'flexbuffers.js');
-    html = this.updateExternalUri(html, webview, '%zip.js%', 'zip.js');
-    html = this.updateExternalUri(html, webview, '%gzip.js%', 'gzip.js');
-    html = this.updateExternalUri(html, webview, '%tar.js%', 'tar.js');
-    // for circle format
-    html = this.updateExternalUri(html, webview, '%circle.js%', 'circle.js');
-    html = this.updateExternalUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
-    // modified for one-vscode
-    html = this.updateUri(html, webview, '%index.js%', 'index.js');
-    html = this.updateUri(html, webview, '%view.js%', 'view.js');
-    // viewMode
-    html = html.replace('%viewMode%', this._viewMode);
+    const htmlPath = this.getMediaPath('index.html');
+
+    let html =
+      `<!DOCTYPE html>
+            <html lang="en">
+
+            <head>
+                <meta charset="utf-8">
+                <meta http-equiv="Content-Security-Policy" content="img-src vscode;">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">F
+                <title>Document</title>
+            </head>
+
+            <body>
+                <button id="testBtn">클릭!</button>
+                <script>
+                    const vscode = acquireVsCodeApi();
+                    const testBtn = document.querySelector("#testBtn");
+                    testBtn.addEventListener("click", e => {
+                        e.preventDefault();
+                        vscode.postMessage({
+           type:"dd"
+            });
+        });
+    </script>
+</body>
+
+</html>`;
+
+
+    // const htmlPath = this.getMediaPath('index.html');
+    // let html = fs.readFileSync(htmlPath.fsPath, { encoding: 'utf-8' });
+
+    // const nonce = getNonce();
+    // html = html.replace(/\%nonce%/gi, nonce);
+    // html = html.replace('%webview.cspSource%', webview.cspSource);
+    // // necessary files from netron to work
+    // html = this.updateUri(html, webview, '%view-grapher.css%', 'view-grapher.css');
+    // html = this.updateUri(html, webview, '%view-sidebar.css%', 'view-sidebar.css');
+    // html = this.updateExternalUri(html, webview, '%view-sidebar.js%', 'view-sidebar.js');
+    // html = this.updateUri(html, webview, '%view-grapher.js%', 'view-grapher.js');
+    // html = this.updateExternalUri(html, webview, '%dagre.js%', 'dagre.js');
+    // html = this.updateExternalUri(html, webview, '%base.js%', 'base.js');
+    // html = this.updateExternalUri(html, webview, '%text.js%', 'text.js');
+    // html = this.updateExternalUri(html, webview, '%json.js%', 'json.js');
+    // html = this.updateExternalUri(html, webview, '%xml.js%', 'xml.js');
+    // html = this.updateExternalUri(html, webview, '%python.js%', 'python.js');
+    // html = this.updateExternalUri(html, webview, '%protobuf.js%', 'protobuf.js');
+    // html = this.updateExternalUri(html, webview, '%flatbuffers.js%', 'flatbuffers.js');
+    // html = this.updateExternalUri(html, webview, '%flexbuffers.js%', 'flexbuffers.js');
+    // html = this.updateExternalUri(html, webview, '%zip.js%', 'zip.js');
+    // html = this.updateExternalUri(html, webview, '%gzip.js%', 'gzip.js');
+    // html = this.updateExternalUri(html, webview, '%tar.js%', 'tar.js');
+    // // for circle format
+    // html = this.updateExternalUri(html, webview, '%circle.js%', 'circle.js');
+    // html = this.updateExternalUri(html, webview, '%circle-schema.js%', 'circle-schema.js');
+    // // modified for one-vscode
+    // html = this.updateUri(html, webview, '%index.js%', 'index.js');
+    // html = this.updateUri(html, webview, '%view.js%', 'view.js');
+    // // viewMode
+    // html = html.replace('%viewMode%', this._viewMode);
 
     return html;
   }
