@@ -323,7 +323,6 @@ export class CircleEditorProvider implements
 
 	// CustomReadonlyEditorProvider implements 
 	//from CircleViewer
-	//Ctrl 상속받은 CustomEditor 등록
 	async resolveCustomEditor(
 		document: CircleEditorDocument, webviewPanel: vscode.WebviewPanel,
 		_token: vscode.CancellationToken): Promise<void> {
