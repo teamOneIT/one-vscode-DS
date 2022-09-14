@@ -258,6 +258,7 @@ export class CircleEditorProvider implements
 		this._context = context;
 	}
 
+	//edit 발생 시 
 	private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<vscode.CustomDocumentEditEvent<CircleEditorDocument>>();
 	public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
 
@@ -276,6 +277,8 @@ export class CircleEditorProvider implements
 
 	private readonly webviews = new WebviewCollection();
 
+
+	//from PawDrawEditor
 	async openCustomDocument(
 		uri: vscode.Uri,
 		openContext: { backupId?: string },
@@ -318,12 +321,15 @@ export class CircleEditorProvider implements
 		return document;
 	}
 
-	// CustomReadonlyEditorProvider implements
+	// CustomReadonlyEditorProvider implements 
+	//from CircleViewer
+	//Ctrl 상속받은 CustomEditor 등록
 	async resolveCustomEditor(
 		document: CircleEditorDocument, webviewPanel: vscode.WebviewPanel,
 		_token: vscode.CancellationToken): Promise<void> {
-		document.openView(webviewPanel, this._context.extensionUri);
+	  document.openView(webviewPanel, this._context.extensionUri);
 	}
+
 
 	private _requestId = 1;
 	private readonly _callbacks = new Map<number, (response: any) => void>();
